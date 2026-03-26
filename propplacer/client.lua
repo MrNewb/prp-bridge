@@ -22,7 +22,7 @@ end
 ---@param forceGround boolean? should the prop be forced on the ground
 ---@param allowedMaterials table<number, boolean>? what materials can the prop be placed on if any
 ---@param maxDistance number? the max distance from you the prop can be placed
----@return table | nil
+---@return vector4 | nil
 local function propPlacer(model, forceGround, allowedMaterials, maxDistance)
     if isPlacingProp then
         bridge.fw.notify("error", locale("ALREADY_PLACING_PROP"))
@@ -96,6 +96,11 @@ local function propPlacer(model, forceGround, allowedMaterials, maxDistance)
 
                 if IsControlJustPressed(0, 38) or IsDisabledControlJustPressed(0, 38) then -- e
                     if #(GetEntityCoords(placingEntity, false) - GetEntityCoords(cache.ped, false)) <= maxDistance then
+                        -- Make sure its on the ground before we grab its final coords
+                        if forceGround then
+                            PlaceObjectOnGroundProperly(placingEntity)
+                        end
+                        
                         finalCoords = GetEntityCoords(placingEntity, false)
                         finalRotation = GetEntityHeading(placingEntity)
                         isPlacingProp = false
